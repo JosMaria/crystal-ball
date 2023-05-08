@@ -13,11 +13,20 @@ public class ShampooSalesService {
 
     private static final String DATA_PATH = "src/main/resources/shampoo-sales-data.txt";
 
+    private static ShampooSalesService shampooSalesService;
     private final List<ShampooSalesInformation> sales;
 
-    public ShampooSalesService() throws IOException {
+    private ShampooSalesService() throws IOException {
         sales = readData();
         sales.forEach(System.out::println);
+    }
+
+    public static ShampooSalesService getInstance() throws IOException {
+        return shampooSalesService == null ? new ShampooSalesService() : shampooSalesService;
+    }
+
+    public List<ShampooSalesInformation> getSales() {
+        return sales;
     }
 
     public long getCount() {
@@ -39,6 +48,7 @@ public class ShampooSalesService {
             if (isFirstTime) {
                 value = shampoo.unitSales();
                 isFirstTime = false;
+
             } else {
                 if (operation.test(shampoo.unitSales(), value)) {
                     value = shampoo.unitSales();
@@ -101,12 +111,4 @@ public class ShampooSalesService {
             default -> 0;
         };
     }
-
-    /*public static void main(String[] args) throws IOException {
-        ShampooSalesService shampoo = new ShampooSalesService();
-        System.out.println("Cantidad: " + shampoo.getCount());
-        System.out.println("Max: " + shampoo.getValueMax());
-        System.out.println("Min: " + shampoo.getValueMin());
-        System.out.println("Prom: " + shampoo.getAverage());
-    }*/
 }
