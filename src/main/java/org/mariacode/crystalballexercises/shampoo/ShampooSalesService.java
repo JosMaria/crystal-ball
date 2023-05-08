@@ -24,6 +24,14 @@ public class ShampooSalesService {
         return sales.size();
     }
 
+    private int getValueMax() {
+        return getValueGivenOperation((unitSale, valueMin) -> unitSale > valueMin);
+    }
+
+    private int getValueMin() {
+        return getValueGivenOperation((unitSale, valueMin) -> unitSale < valueMin);
+    }
+
     private int getValueGivenOperation(BiPredicate<Integer, Integer> operation) {
         boolean isFirstTime = true;
         int value = 0;
@@ -94,13 +102,11 @@ public class ShampooSalesService {
         };
     }
 
-    public static void main(String[] args) throws IOException {
+    /*public static void main(String[] args) throws IOException {
         ShampooSalesService shampoo = new ShampooSalesService();
         System.out.println("Cantidad: " + shampoo.getCount());
-        BiPredicate<Integer, Integer> getGreater = (unitSale, valueMin) -> unitSale > valueMin;
-        BiPredicate<Integer, Integer> getMinus = (unitSale, valueMin) -> unitSale < valueMin;
-        System.out.println("Max: " + shampoo.getValueGivenOperation(getGreater));
-        System.out.println("Min: " + shampoo.getValueGivenOperation(getMinus));
+        System.out.println("Max: " + shampoo.getValueMax());
+        System.out.println("Min: " + shampoo.getValueMin());
         System.out.println("Prom: " + shampoo.getAverage());
-    }
+    }*/
 }
