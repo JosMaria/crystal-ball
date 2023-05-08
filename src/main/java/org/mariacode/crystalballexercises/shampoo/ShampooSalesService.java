@@ -4,27 +4,55 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class ShampooSalesService {
 
     private static final String DATA_PATH = "src/main/resources/shampoo-sales-data.txt";
 
-    public ShampooSalesService() {
-        try {
-            readData();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    private final List<ShampooSalesInformation> sales;
+
+    public ShampooSalesService() throws IOException {
+        sales = readData();
+        sales.forEach(System.out::println);
     }
 
-    private void readData() throws IOException {
+    public long getCount() {
+        return sales.size();
+    }
+
+    private int getValueGivenOperation(BiPredicate<Integer, Integer> operation) {
+        boolean isFirstTime = true;
+        int value = 0;
+        for (ShampooSalesInformation shampoo: sales) {
+            if (isFirstTime) {
+                value = shampoo.unitSales();
+                isFirstTime = false;
+            } else {
+                if (operation.test(shampoo.unitSales(), value)) {
+                    value = shampoo.unitSales();
+                }
+            }
+        }
+        return value;
+    }
+
+    private double getAverage() {
+        return sales.stream()
+                .mapToInt(ShampooSalesInformation::unitSales)
+                .average()
+                .orElse(0.0);
+    }
+
+    private List<ShampooSalesInformation> readData() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(DATA_PATH));
-        lines.stream()
+        return lines.stream()
                 .skip(4)
                 .map(this::createShampooInformation)
-                .forEach(System.out::println);
+                .collect(Collectors.toCollection(ArrayList::new));
 
     }
 
@@ -66,7 +94,13 @@ public class ShampooSalesService {
         };
     }
 
-    public static void main(String[] args) {
-        new ShampooSalesService();
+    public static void main(String[] args) throws IOException {
+        ShampooSalesService shampoo = new ShampooSalesService();
+        System.out.println("Cantidad: " + shampoo.getCount());
+        BiPredicate<Integer, Integer> getGreater = (unitSale, valueMin) -> unitSale > valueMin;
+        BiPredicate<Integer, Integer> getMinus = (unitSale, valueMin) -> unitSale < valueMin;
+        System.out.println("Max: " + shampoo.getValueGivenOperation(getGreater));
+        System.out.println("Min: " + shampoo.getValueGivenOperation(getMinus));
+        System.out.println("Prom: " + shampoo.getAverage());
     }
 }
