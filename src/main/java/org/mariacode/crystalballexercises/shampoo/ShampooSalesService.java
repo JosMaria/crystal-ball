@@ -33,11 +33,11 @@ public class ShampooSalesService {
         return sales.size();
     }
 
-    private int getValueMax() {
+    public int getValueMax() {
         return getValueGivenOperation((unitSale, valueMin) -> unitSale > valueMin);
     }
 
-    private int getValueMin() {
+    public int getValueMin() {
         return getValueGivenOperation((unitSale, valueMin) -> unitSale < valueMin);
     }
 
@@ -58,7 +58,7 @@ public class ShampooSalesService {
         return value;
     }
 
-    private double getAverage() {
+    public Double getAverage() {
         return sales.stream()
                 .mapToInt(ShampooSalesInformation::unitSales)
                 .average()
