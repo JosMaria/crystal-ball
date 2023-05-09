@@ -1,8 +1,9 @@
 module org.mariacode.crystalballexercises {
     requires javafx.controls;
-    requires javafx.fxml;
+    requires org.jfree.jfreechart;
+    requires javafx.graphics;
+    requires javafx.graphicsEmpty;
 
-
-    opens org.mariacode.crystalballexercises to javafx.fxml;
-    exports org.mariacode.crystalballexercises;
+    opens org.mariacode.crystalballexercises;
+    opens org.mariacode.crystalballexercises.view;
 }
