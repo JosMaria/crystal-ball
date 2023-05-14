@@ -5,6 +5,14 @@ import java.util.List;
 
 public class InventorySystemService {
 
+    private static InventorySystemService instance;
+
+    private InventorySystemService() {}
+
+    public static InventorySystemService getInstance() {
+        return instance == null ? new InventorySystemService() : instance;
+    }
+
     public List<InventoryInfo> dataToTable(DataInput input) {
         final int dmd = 100;
 
