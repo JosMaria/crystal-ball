@@ -1,22 +1,42 @@
 package org.mariacode.crystalballexercises.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class InventorySystemService {
 
     private static InventorySystemService instance;
 
-    private InventorySystemService() {}
+    private double totalHoldCost;
+    private int totalOrderCost;
+
+    private InventorySystemService() {
+        setValueInitial();
+    }
 
     public static InventorySystemService getInstance() {
         return instance == null ? new InventorySystemService() : instance;
     }
 
-    public List<InventoryInfo> dataToTable(DataInput input) {
-        final int dmd = 100;
+    private void setValueInitial() {
+        totalHoldCost = 0;
+        totalOrderCost = 0;
+    }
 
-        List<InventoryInfo> rows = new ArrayList<>();
+    public double getTotalHoldCost() {
+        return totalHoldCost;
+    }
+
+    public int getTotalOrderCost() {
+        return totalOrderCost;
+    }
+
+    public ObservableList<InventoryInfo> dataToTable(DataInput input) {
+        setValueInitial();
+
+        final int dmd = 100;
+        ObservableList<InventoryInfo> rows = FXCollections.observableArrayList();
+
         boolean isFirstIteration = true;
         int begInvPos, begInv, unitsRec, endInv = 0, lostSales,
             endingInvPos = 0, weekDue, orderCost, shortCost, totalCost;
@@ -47,6 +67,9 @@ public class InventorySystemService {
             shortCost = lostSales * input.lostSalesCost();
             totalCost = (int) holdCost + orderCost + shortCost;
 
+            totalHoldCost += holdCost;
+            totalOrderCost += orderCost;
+
             rows.add(new InventoryInfo(
                     week, begInvPos, begInv, orderRec, unitsRec, dmd,
                     endInv, lostSales, orderPlaced, endingInvPos,
@@ -68,19 +91,5 @@ public class InventorySystemService {
         int temp = begInvPos - dmd + lostSales;
         int conditional = orderPlaced ? orderQuantity : 0;
         return temp + conditional;
-    }
-
-    public static void main(String[] args) {
-        InventorySystemService service = new InventorySystemService();
-        DataInput input = new DataInput(300, 250, 300, 2, 50, 0.20, 100);
-        service.dataToTable(input)
-                        .forEach(InventorySystemService::print);
-    }
-
-    static void print(InventoryInfo row) {
-        System.out.printf(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s    %s\t\t%s\t\t%s\n",
-                row.week(), row.begInvPos(), row.begInv(), row.orderRec(), row.unitRec(), row.dmd(),
-                row.endInv(), row.lostSales(), row.orderPlaced(), row.endingInvPos(), row.weekDue(),
-                row.holdCost(), row.orderCost(), row.shortCost(), row.totalCost()));
     }
 }
