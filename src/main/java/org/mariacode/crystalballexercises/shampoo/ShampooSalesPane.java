@@ -17,11 +17,16 @@ public class ShampooSalesPane {
 
     private VBox pane;
     private final ShampooSalesService shampooSalesService;
-
-    public ShampooSalesPane() throws IOException {
+    private static ShampooSalesPane shampooSalesPane;
+    private  ShampooSalesPane() throws IOException {
         shampooSalesService = ShampooSalesService.getInstance();
         buildPane();
     }
+
+    public static ShampooSalesPane getInstance() throws IOException {
+        return shampooSalesPane == null ? new ShampooSalesPane() : shampooSalesPane;
+    }
+
     public VBox getPane() {
         return pane;
     }

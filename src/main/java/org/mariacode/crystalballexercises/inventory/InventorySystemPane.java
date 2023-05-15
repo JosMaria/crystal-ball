@@ -20,10 +20,16 @@ public class InventorySystemPane {
     private Button btnStart;
     private Label lblResultFinal;
 
-    public InventorySystemPane() {
+    private static InventorySystemPane inventorySystemPane;
+
+    private InventorySystemPane() {
         this.service = InventorySystemService.getInstance();
         loadControls();
         buildPane();
+    }
+
+    public static InventorySystemPane getInstance() {
+        return inventorySystemPane == null ? new InventorySystemPane() : inventorySystemPane;
     }
 
     public VBox getPane() {
