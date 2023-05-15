@@ -52,7 +52,9 @@ public class SalesProjectionPane {
     }
 
     private void click_btn_start() {
-
+        int startingSales = Integer.parseInt(txtStartingSales.getText());
+        SalesProjectionInput input = new SalesProjectionInput(startingSales);
+        table.setItems(service.dataToTable(input));
     }
 
     private void buildTable() {
