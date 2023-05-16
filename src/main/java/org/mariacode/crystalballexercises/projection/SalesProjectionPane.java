@@ -1,11 +1,20 @@
 package org.mariacode.crystalballexercises.projection;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SalesProjectionPane {
@@ -18,6 +27,8 @@ public class SalesProjectionPane {
     private TableView<SalesInfo> table;
     private TextField txtStartingSales;
     private Button btnStart;
+    private Group group;
+    private BarChart<String, Number> barChart;
 
     private SalesProjectionPane() {
         service = new SalesProjectionService();
@@ -33,7 +44,9 @@ public class SalesProjectionPane {
         );
         rightPane.setPadding(new Insets(20));
         rightPane.setFillWidth(false);
-        pane = new VBox(rightPane);
+
+        HBox pane = new HBox(20, rightPane, new HBox(group));
+        this.pane = new VBox(pane);
     }
 
     public static SalesProjectionPane getInstance() {
@@ -49,12 +62,15 @@ public class SalesProjectionPane {
         btnStart = new Button("Start");
         btnStart.setOnAction(actionEvent -> click_btn_start());
         buildTable();
+        buildGraphicBar();
     }
 
     private void click_btn_start() {
         int startingSales = Integer.parseInt(txtStartingSales.getText());
         SalesProjectionInput input = new SalesProjectionInput(startingSales);
-        table.setItems(service.dataToTable(input));
+        ObservableList<SalesInfo> listInput = service.dataToTable(input);
+        table.setItems(listInput);
+        barChart.setData(FXCollections.observableList(update(listInput)));
     }
 
     private void buildTable() {
@@ -68,6 +84,49 @@ public class SalesProjectionPane {
                         colStatingSales, colGrowth, colEndingSales
                 )
         );
+    }
+
+    private void buildGraphicBar() {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setCategories(FXCollections.observableArrayList(List.of("Years")));
+        xAxis.setLabel("Revistas que se venden");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Cantidad");
+
+        barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Volumen de ventas");
+        barChart.setBarGap(30);
+        barChart.setAnimated(true);
+        barChart.getData().addAll(loadDataGraphic());
+        group = new Group(barChart);
+    }
+
+    private List<XYChart.Series<String, Number>> loadDataGraphic() {
+        List<XYChart.Series<String, Number>> list  = new ArrayList<>();
+        for (Growth growth: service.getInputGrowth()) {
+            XYChart.Series<String, Number> xyChart = new XYChart.Series<>();
+            xyChart.setName(growth.name());
+            xyChart.getData().add(new XYChart.Data<>("Years" , 0));
+            list.add(xyChart);
+        }
+
+        return list;
+    }
+
+    private List<XYChart.Series<String, Number>> update(List<SalesInfo> listInput) {
+        List<XYChart.Series<String, Number>> list  = new ArrayList<>();
+        int index = 0;
+        for (Growth growth: service.getInputGrowth()) {
+            XYChart.Series<String, Number> xyChart = new XYChart.Series<>();
+            xyChart.setName(growth.name());
+            SalesInfo salesInput = listInput.get(index);
+            xyChart.getData().add(new XYChart.Data<>("Years", salesInput.getEndingSales()));
+            list.add(xyChart);
+            index++;
+        }
+
+        return list;
     }
 
     private <U, T> TableColumn<U, T> column(String titleColumn, String property, double prefSize) {
