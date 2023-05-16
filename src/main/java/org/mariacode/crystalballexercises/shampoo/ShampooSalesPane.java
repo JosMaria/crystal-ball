@@ -8,8 +8,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -19,11 +17,16 @@ public class ShampooSalesPane {
 
     private VBox pane;
     private final ShampooSalesService shampooSalesService;
-
-    public ShampooSalesPane() throws IOException {
+    private static ShampooSalesPane shampooSalesPane;
+    private  ShampooSalesPane() throws IOException {
         shampooSalesService = ShampooSalesService.getInstance();
         buildPane();
     }
+
+    public static ShampooSalesPane getInstance() throws IOException {
+        return shampooSalesPane == null ? new ShampooSalesPane() : shampooSalesPane;
+    }
+
     public VBox getPane() {
         return pane;
     }
