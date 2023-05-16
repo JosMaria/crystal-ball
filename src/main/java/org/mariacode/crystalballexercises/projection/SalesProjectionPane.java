@@ -3,6 +3,7 @@ package org.mariacode.crystalballexercises.projection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -46,6 +47,7 @@ public class SalesProjectionPane {
         rightPane.setFillWidth(false);
 
         HBox pane = new HBox(20, rightPane, new HBox(group));
+        pane.setAlignment(Pos.CENTER);
         this.pane = new VBox(pane);
     }
 
@@ -89,13 +91,13 @@ public class SalesProjectionPane {
     private void buildGraphicBar() {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setCategories(FXCollections.observableArrayList(List.of("Years")));
-        xAxis.setLabel("Revistas que se venden");
+        xAxis.setLabel("Years - trimestre");
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Cantidad");
 
         barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle("Volumen de ventas");
+        barChart.setTitle("Sales Growth");
         barChart.setBarGap(30);
         barChart.setAnimated(true);
         barChart.getData().addAll(loadDataGraphic());
